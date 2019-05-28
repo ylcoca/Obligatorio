@@ -3,27 +3,58 @@ title: "Obligatorio"
 output: html_document
 ---
 
+## Preparation
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(class)
+library(e1071) #libreria de naive bayes
+
 source('utils.R')
+set.seed(117)
+raw_data <- read.csv('dataset.csv')
 ```
 
-## R Markdown
+##Data Cleansing
+```{r }
+raw_data = raw_data[complete.cases(raw_data), ]
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+##Only Numeric Values
+```{r }
+nums <- unlist(lapply(raw_data,is.numeric))
+raw_data2 <- raw_data[,nums]
 
-You can also embed plots, for example:
+raw_data2$Churn <- raw_data$Churn
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+# Particion train - test
+
+h.part <- partition_train_test(raw_data2, ntrain = 28087)
+h.train <- h.part$train
+h.test <- h.part$test
+
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Naive Bayes
+```{r }
+
+h.fit <- naiveBayes(as.factor(train$Churn) ~ ., data = train)
+test$yhat <- predict(h.fit, newdata = test, type = 'class') 
+error <- fn_err_cla(test$yhat,test$Churn)
+
+
+h.k_folds <- 5
+h.cv_part <- partition_cv(h.train, k_folds = h.k_folds)
+h.cv_train <- h.cv_part$train
+h.cv_test <- h.cv_part$test
+
+
+```
+
+#KNN
+#Logistic Regression 
+#Random Forest
