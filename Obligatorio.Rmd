@@ -42,15 +42,21 @@ h.test <- h.part$test
 ## Naive Bayes
 ```{r }
 
-h.fit <- naiveBayes(as.factor(train$Churn) ~ ., data = train)
-test$yhat <- predict(h.fit, newdata = test, type = 'class') 
-error <- fn_err_cla(test$yhat,test$Churn)
+h.fit <- naiveBayes(as.factor(h.train$Churn) ~ ., data = h.train)
+h.test$yhat <- predict(h.fit, newdata = h.test, type = 'class') 
+error <- fn_err_cla(h.test$yhat,h.test$Churn)
 
+
+#Cross Validation
 
 h.k_folds <- 5
 h.cv_part <- partition_cv(h.train, k_folds = h.k_folds)
 h.cv_train <- h.cv_part$train
 h.cv_test <- h.cv_part$test
+
+h.formulas <- c('as.factor(Churn) ~ .')
+cv_err_nv(h.cv_part,h.formulas)
+
 
 
 ```

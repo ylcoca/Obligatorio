@@ -18,9 +18,13 @@ partition_train_test <- function(df, ntrain = 10) {
 # Particion en 5 folds
 
 partition_cv <- function(df, k_folds = 5) {
-  cv_test <- split(df, seq(1, h.k_folds))
+  cv_folds <- list()
+  cv_folds <- split(df, seq(1,5))
+  
+  #cv_test <- split(df, seq(1, h.k_folds))
   cv_train <- list()
   for (k in seq(1, k_folds)) {
+    cv_test[[k]] <- cv_folds[[k]]
     cv_train[[k]] <- data.frame()
     for (i in seq(1, k_folds)) {
       if (i != k) cv_train[[k]] <- rbind(cv_train[[k]], cv_test[[i]])
@@ -55,7 +59,7 @@ glm_pred_err <- function(list_fit, newdata, y) {
 
 # Prediccion y error MSE
 
-cv_err <- function(cv_part, formulas, y) {
+cv_err_glm <- function(cv_part, formulas, y) {
   cv_test <- cv_part$test
   cv_train <- cv_part$train
   cv_matrix_err <- matrix(0, nrow = cv_part$k_folds, ncol = length(formulas))
@@ -67,4 +71,18 @@ cv_err <- function(cv_part, formulas, y) {
   apply(cv_matrix_err, 2, mean)
 }
 
+cv_err_nv <-function(cv_part){
+  cv_errores <- list()
+   cv_test <- cv_part$test
+   cv_train <- cv_part$train
+
+  for (i in seq(1, cv_part$k_folds)) {
+    fit <- naiveBayes(as.formula(h.formulas[1]),data = data.frame(cv_train[i]))
+    yhat <- predict(fit, newdata = data.frame(cv_test[i]))
+    cv_errores[i] <- mean(data.frame(cv_test[i])$Churn != yhat)
+  }
+   cv_errores2 <- as.data.frame.numeric(cv_errores)
+   cv_error <- mean(as.numeric(cv_errores2$cv_errores))
+   print(cv_error)
+}
 

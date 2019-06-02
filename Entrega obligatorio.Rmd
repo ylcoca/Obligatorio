@@ -1,0 +1,152 @@
+---
+title: "Obligatorio"
+author: "Juan Igancio Saldías"
+date: "27 de mayo de 2019"
+output: html_document
+---
+
+
+## Preparacion
+
+```{r}
+
+set.seed(117)
+source('utils.R')
+library(class)
+library(e1071)
+
+
+```
+
+
+## Cargamos el dataset
+
+```{r}
+
+
+raw_data <- read.csv(file = 'dataset.csv')
+head(raw_data)
+str(raw_data)
+
+
+```
+
+## Limpiar el dataset
+
+```{r}
+
+# Identificamos y quitamos NA
+
+raw_data <- raw_data[complete.cases(raw_data),]
+
+# Seleccionamos variables numericas
+
+nums <- unlist(lapply(raw_data, is.numeric))  
+raw_data2 <- raw_data[,nums]
+raw_data2$Churn <- raw_data$Churn
+
+
+```
+
+## Dividir dataset entre test y train
+
+```{r}
+
+muestreo <- sample.int(nrow(raw_data2), 28087) #Uso el 60% de los datos para train.
+
+train <- raw_data2[muestreo,]
+test <- raw_data2[-muestreo,]
+
+
+```
+
+
+## NaiveBayes
+
+```{r}
+
+
+h.fit <- naiveBayes(as.factor(train$Churn) ~ ., data = train)
+test$yhat <- predict(h.fit, newdata = test)
+
+
+# Error en test
+
+error <- mean(test$yhat != test$Churn)
+print(error)
+
+# Cross validation
+
+# Divido el dataset de train
+
+cv_folds <- list()
+cv_folds <- split(train, seq(1,5))
+
+cv_test <- list()
+cv_train <- list()
+
+for (k in seq(1, 5)) {
+  
+  cv_test[[k]] <- cv_folds[[k]]
+    cv_train[[k]] <- data.frame()
+    
+  for (i in seq(1, 5)) {
+    
+    if (i != k) cv_train[[k]] <- rbind(cv_train[[k]], cv_folds[[i]])
+    
+  }
+  
+}
+
+# Error en cross validation
+
+cv_errores <- list()
+
+for (k in seq(1, 5)) {
+
+cv_h.fit <- naiveBayes(as.factor(Churn) ~ ., data = data.frame(cv_train[k]))
+cv_yhat <- predict(cv_h.fit, newdata = data.frame(cv_test[k]))
+cv_errores[k] <- mean(data.frame(cv_test[k])$Churn != cv_yhat)
+
+}
+
+cv_errores2 <- as.data.frame.numeric(cv_errores)
+cv_error <- mean(as.numeric(cv_errores2$cv_errores))
+print(cv_error)
+
+
+
+# El error es muy parecido que las priobabilidades a priori. Tanto en test como en cross validation. Por eso naive bayes no es bueno.
+
+
+```
+
+## Regresion logistica
+
+```{r}
+
+
+
+```
+
+
+## KNN
+
+```{r}
+
+
+
+
+```
+
+## Arbol de decision
+
+```{r}
+
+```
+
+
+
+
+
+
