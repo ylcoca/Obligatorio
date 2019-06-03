@@ -4,7 +4,7 @@
 
 fn_err_cla <- function(yhat, y) { mean(yhat != y) }
 
-# errir de regresion MSE
+# error de regresion MSE
 
 fn_err_mse <- function(yhat, y) { mean((yhat - y)^2) }
 

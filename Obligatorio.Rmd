@@ -58,9 +58,55 @@ h.formulas <- c('as.factor(Churn) ~ .')
 cv_err_nv(h.cv_part,h.formulas)
 
 
+# El error es muy parecido que las priobabilidades a priori. Tanto en test como en cross validation. Por eso naive bayes no es bueno.
+
+```
+## KNN
+
+```{r}
+library(ElemStatLearn)
+
+#Fitting KNN to the training set and predicting the test set results
+y_pred = knn(train = h.train[,-36],h.test[,-36],h.train$Churn,k = 5)
+
+#making the confusion matrix
+cm = table(h.test$Churn,y_pred)
+set = h.train
+ X1 = seq(min(set[,-36]),max(set[,-36]))
+ X2 = seq(min(set[,-36]),max(set[,-36]))
+ grid_set = expand.grid(X1,X2)  
+ colnames = c('Monthly Revenue','Monthly Minutes')
+ y_grid = knn(train = h.train[,-36],grid_set[,-36],h.train$Churn,k = 5)
+ plot(set[,-36],
+      main = 'K-NN (Trainig Set)',
+      xlab = 'Monthly Revenue',ylab = 'Monthly Minutes',
+      xlim = range(X1), ylim = range(X2))
+ contour(X1,X2, matrix(as.numeric(y_grid),length(X1),length(X2)),add = TRUE)
+ points(grid_set,pch = '.',col =ifelse(y_grid == 1,'springgreen3','tomatoe'))
+  points(set,pch = 21,bg =ifelse(set[,36] == 'yes','green4','red3'))
+#   
+
+#-----------------------
+# h.max_complexity <- 50
+# h.sims <- 20
+# h.A <- function(k, train, test) {
+#   knn(train, test, cl = train$Churn, k)
+# }
+# h.test <- head(h.test, -1)
+# 
+# h.predTest <- list()
+# for (k in seq(h.max_complexity)) {
+#   h.predTest[[k]] <- list()
+#   for (s in seq(h.sims)) {
+#     h.predTest[[k]][[s]] <- h.A(k, h.train[s], h.test)
+#    }
+# }
+
+
+#Visualizing test set results
+set = h.test
 
 ```
 
-#KNN
 #Logistic Regression 
 #Random Forest
