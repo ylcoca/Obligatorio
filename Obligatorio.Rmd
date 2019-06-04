@@ -94,27 +94,10 @@ set = h.train
   points(set,pch = 21,bg =ifelse(set[,36] == 'yes','green4','red3'))
 #   
 
-#-----------------------
-# h.max_complexity <- 50
-# h.sims <- 20
-# h.A <- function(k, train, test) {
-#   knn(train, test, cl = train$Churn, k)
-# }
-# h.test <- head(h.test, -1)
-# 
-# h.predTest <- list()
-# for (k in seq(h.max_complexity)) {
-#   h.predTest[[k]] <- list()
-#   for (s in seq(h.sims)) {
-#     h.predTest[[k]][[s]] <- h.A(k, h.train[s], h.test)
-#    }
-# }
-
-
-#Visualizing test set results
-set = h.test
 
 ```
 
 #Logistic Regression 
 #Random Forest
+#RPART
+#Boosting
