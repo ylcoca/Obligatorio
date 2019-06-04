@@ -55,7 +55,7 @@ h.cv_train <- h.cv_part$train
 h.cv_test <- h.cv_part$test
 
 h.formulas <- c('as.factor(Churn) ~ .')
-cv_err_nv(h.cv_part,h.formulas)
+cv_err_nv(h.cv_part)
 
 
 # El error es muy parecido que las priobabilidades a priori. Tanto en test como en cross validation. Por eso naive bayes no es bueno.
@@ -67,10 +67,18 @@ cv_err_nv(h.cv_part,h.formulas)
 library(ElemStatLearn)
 
 #Fitting KNN to the training set and predicting the test set results
-y_pred = knn(train = h.train[,-36],h.test[,-36],h.train$Churn,k = 5)
+y_pred = knn(train = h.train[,2:35],h.test[,2:35],h.train$Churn,k = 5)
+h.test$ypred = y_pred
+
+
+
 
 #making the confusion matrix
 cm = table(h.test$Churn,y_pred)
+error_knn = ((cm[2]+cm[3])/(cm[1]+cm[2]+cm[3]+cm[4]))
+
+
+
 set = h.train
  X1 = seq(min(set[,-36]),max(set[,-36]))
  X2 = seq(min(set[,-36]),max(set[,-36]))

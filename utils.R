@@ -18,17 +18,37 @@ partition_train_test <- function(df, ntrain = 10) {
 # Particion en 5 folds
 
 partition_cv <- function(df, k_folds = 5) {
+  # cv_folds <- list()
+  # cv_folds <- split(df, seq(1,h.k_folds))
+  # 
+  # #cv_test <- split(df, seq(1, h.k_folds))
+  # # <- list()
+  # cv_test <- list()
+  # cv_train <- list()
+  # for (k in seq(1, k_folds)) {
+  #   cv_test[[k]] <- cv_folds[[k]]
+  #   cv_train[[k]] <- data.frame()
+  #   for (i in seq(1, k_folds)) {
+  #     if (i != k) cv_train[[k]] <- rbind(cv_train[[k]], cv_test[[i]])
+  #   }
+  # }
   cv_folds <- list()
-  cv_folds <- split(df, seq(1,5))
+  cv_folds <- split(h.train, seq(1,5))
   
-  #cv_test <- split(df, seq(1, h.k_folds))
+  cv_test <- list()
   cv_train <- list()
-  for (k in seq(1, k_folds)) {
+  
+  for (k in seq(1, 5)) {
+    
     cv_test[[k]] <- cv_folds[[k]]
     cv_train[[k]] <- data.frame()
-    for (i in seq(1, k_folds)) {
-      if (i != k) cv_train[[k]] <- rbind(cv_train[[k]], cv_test[[i]])
+    
+    for (i in seq(1, 5)) {
+      
+      if (i != k) cv_train[[k]] <- rbind(cv_train[[k]], cv_folds[[i]])
+      
     }
+    
   }
   list(train = cv_train, test = cv_test, k_folds = k_folds)
 }
