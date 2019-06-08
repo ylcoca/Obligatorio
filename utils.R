@@ -105,4 +105,7 @@ cv_err_nv <-function(cv_part){
    cv_error <- mean(as.numeric(cv_errores2$cv_errores))
    print(cv_error)
 }
+cv_err_knn <- function(){
+  
+}
 

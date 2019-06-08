@@ -70,30 +70,51 @@ library(ElemStatLearn)
 y_pred = knn(train = h.train[,2:35],h.test[,2:35],h.train$Churn,k = 5)
 h.test$ypred = y_pred
 
-
-
-
 #making the confusion matrix
-cm = table(h.test$Churn,y_pred)
-error_knn = ((cm[2]+cm[3])/(cm[1]+cm[2]+cm[3]+cm[4]))
+cm = table(h.test$Churn,y_pred) #error_knn = ((cm[2]+cm[3])/(cm[1]+cm[2]+cm[3]+cm[4]))
+error_knn = mean(h.test$ypred != h.test$Churn); 
 
 
+#testing with different k's
+ks <- 1:10
+error_list_knn <- list()
 
-set = h.train
- X1 = seq(min(set[,-36]),max(set[,-36]))
- X2 = seq(min(set[,-36]),max(set[,-36]))
- grid_set = expand.grid(X1,X2)  
- colnames = c('Monthly Revenue','Monthly Minutes')
- y_grid = knn(train = h.train[,-36],grid_set[,-36],h.train$Churn,k = 5)
- plot(set[,-36],
-      main = 'K-NN (Trainig Set)',
-      xlab = 'Monthly Revenue',ylab = 'Monthly Minutes',
-      xlim = range(X1), ylim = range(X2))
- contour(X1,X2, matrix(as.numeric(y_grid),length(X1),length(X2)),add = TRUE)
- points(grid_set,pch = '.',col =ifelse(y_grid == 1,'springgreen3','tomatoe'))
-  points(set,pch = 21,bg =ifelse(set[,36] == 'yes','green4','red3'))
-#   
+   for (k in seq(1, 10)) {
+     
+      y_pred = knn(train = h.train[,2:35],h.test[,2:35],h.train$Churn,k = k)
+      h.test$ypred = y_pred
+      
+      #h.errors_knn$error_knn[k] <- mean(h.test$ypred != h.test$Churn);
+      error_list_knn[k] <- mean(h.test$ypred != h.test$Churn);
+   }
+   
+#   as k rices the error lowers, for k = 10 is the lower error 
 
+plot(ks, error_list_knn, type="o",ylab="misclassification error")
+
+#CV
+h.k_folds <- 5
+h.cv_part <- partition_cv(h.train, k_folds = h.k_folds)
+h.cv_train <- h.cv_part$train
+h.cv_test <- h.cv_part$test
+
+
+ks <- 1:10
+res <- sapply(ks, function(k) {
+  
+  res.k <- sapply(seq_along(h.cv_train), function(i) {
+     
+    pred <- knn(train = h.cv_train[[i]][,2:35],h.cv_test[[i]][,2:35],h.cv_train[[i]]$Churn,k = k)
+    mean(pred != h.cv_test[[i]]$Churn);
+  })
+  ##average 5 folds
+  mean(res.k)
+})
+res
+
+plot(ks, res, type="o",ylab="cross validation error")
+
+#k =9  basandonos en cross validation ofrece el menor error
 
 ```
 
