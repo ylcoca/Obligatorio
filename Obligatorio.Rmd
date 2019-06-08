@@ -66,16 +66,17 @@ cv_err_nv(h.cv_part)
 ```{r}
 library(ElemStatLearn)
 
-#Fitting KNN to the training set and predicting the test set results
+#h.k_folds <- 5 Para todos los casos uso k-fold  = 5
+#Fitting KNN para predecir el "training set" y predecir los resultados de las pruebas
 y_pred = knn(train = h.train[,2:35],h.test[,2:35],h.train$Churn,k = 5)
 h.test$ypred = y_pred
 
-#making the confusion matrix
+#Matriz de confusion
 cm = table(h.test$Churn,y_pred) #error_knn = ((cm[2]+cm[3])/(cm[1]+cm[2]+cm[3]+cm[4]))
 error_knn = mean(h.test$ypred != h.test$Churn); 
 
 
-#testing with different k's
+#Probando con diferentes K
 ks <- 1:10
 error_list_knn <- list()
 
@@ -88,8 +89,8 @@ error_list_knn <- list()
       error_list_knn[k] <- mean(h.test$ypred != h.test$Churn);
    }
    
-#   as k rices the error lowers, for k = 10 is the lower error 
-
+#  Mientras k aumenta disminuye el error, K = 10 es el menor error en este caso
+error_list_knn
 plot(ks, error_list_knn, type="o",ylab="misclassification error")
 
 #CV
@@ -107,14 +108,14 @@ res <- sapply(ks, function(k) {
     pred <- knn(train = h.cv_train[[i]][,2:35],h.cv_test[[i]][,2:35],h.cv_train[[i]]$Churn,k = k)
     mean(pred != h.cv_test[[i]]$Churn);
   })
-  ##average 5 folds
+  ##Promedio para 5 folds
   mean(res.k)
 })
 res
 
 plot(ks, res, type="o",ylab="cross validation error")
 
-#k =9  basandonos en cross validation ofrece el menor error
+#Basandonos en cross validation k = 9  ofrece el menor error
 
 ```
 
